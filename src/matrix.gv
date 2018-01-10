@@ -1,9 +1,0 @@
-// Matrice des flux (2018/01/10 09:44:01)
-digraph {
-	A [label=Alice]
-	B [label=Bob]
-	C [label=Cloe]
-	A -> B
-	A -> C
-	B -> C [constraint=false]
-}
