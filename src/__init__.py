@@ -14,8 +14,8 @@ def main():
 
     update = datetime.datetime.now()
     title = 'Matrice des flux (' + update.strftime('%Y/%m/%d %H:%M:%S') + ')'
-    dot = Digraph(comment=title)
-    dot.engine = 'circo'
+    dot = Digraph(comment=title, name=title)
+    # dot.engine = 'circo'
     # dot.engine = 'sfdp'
 
     dot.node('Titre', title)
@@ -31,20 +31,51 @@ def main():
     dot.node('Réappro', 'Réappro')
     dot.node('Banque', 'Banque')
 
-    for r in range(2, 42):
-        row = matrix['A' + str(r) + ':' + 'M' + str(r)]
-        if None in row[0]:
-            print("None in row %s", str(r))
+    for r in range(2, 50):
+        row = matrix['A' + str(r) + ':' + 'N' + str(r)]
+        flux = Flux(row)
+        if not flux.is_valid():
             continue
-        # print(str(r) + ": " + row[0][0].value)
-        # print(str(r) + ": " + row[0][1].value)
-        dot.edge(row[0][0].value, row[0][1].value, label=row[0][6].value)
-        # print(row_range)
-        # for col in range(1, 13): # M
-        #    print(matrix.cell(column=col, row=row).value)
+        print(flux)
+        dot.edge(flux.src, flux.dst, flux.get_label())
 
     # print(dot.source)
-    dot.render('matrix.gv', view=True)
+    dot.render(filename='matrix.gv',
+               view=True,
+               directory='/Users/ninroot/OneDrive - EPITA/ING2/URSI/FNAC DARTY/Urbanisation shared/Urbanisation shared all/')
+
+
+class Flux:
+    id = 0
+    src = ""
+    dst = ""
+    title = ""
+    progression = 0
+
+    def __init__(self, row):
+        if row is None or row[0] is None:
+            return None
+        if row[0][0].value is not None:
+            self.src = row[0][0].value
+        if row[0][1].value is not None:
+            self.dst = row[0][1].value
+        if row[0][6].value is not None:
+            self.title = row[0][6].value
+        if row[0][11].value is not None:
+            self.progression = row[0][11].value
+        if row[0][12].value is not None:
+            self.id = row[0][12].value
+
+    def __str__(self):
+        return "src: " + self.src + " dst: " + self.dst + " title: " + self.title
+
+    def get_label(self):
+        return '[' + str(self.id) + ']' + self.title + '(' + str(self.progression) + '%)'
+
+    def is_valid(self):
+        if self.src and self.dst:
+            return True
+        return False
 
 
 if __name__ == "__main__":
