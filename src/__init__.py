@@ -13,23 +13,11 @@ def main():
     matrix = workSheet["Matrice des flux"]
 
     update = datetime.datetime.now()
-    title = 'Matrice des flux (' + update.strftime('%Y/%m/%d %H:%M:%S') + ')'
-    dot = Digraph(comment=title, name=title)
+    title = 'Matrice des flux (màj : ' + update.strftime('%Y/%m/%d %H:%M:%S') + ')'
+    dot = Digraph(comment='https://github.com/Ninroot/excel-to-plot', name=title, format='pdf')
+    dot.body.append('\tlabelloc="t";\n\tlabel="' + title + '";')
     # dot.engine = 'circo'
     # dot.engine = 'sfdp'
-
-    dot.node('Titre', title)
-
-    dot.node('Backoffice', 'Backoffice')
-    dot.node('Caisse', 'Caisse')
-    dot.node('Fidélité', 'Fidélité')
-    dot.node('Référentiel', 'Référentiel')
-    dot.node('Monétique', 'Monétique')
-    dot.node('eCommerce', 'eCommerce')
-    dot.node('Entrepôt', 'Entrepôt')
-    dot.node('BI', 'BI')
-    dot.node('Réappro', 'Réappro')
-    dot.node('Banque', 'Banque')
 
     for r in range(2, 50):
         row = matrix['A' + str(r) + ':' + 'N' + str(r)]
@@ -37,11 +25,13 @@ def main():
         if not flux.is_valid():
             continue
         print(flux)
+        # dot.attr('node', shape='rarrow')
         dot.edge(flux.src, flux.dst, flux.get_label())
 
     # print(dot.source)
     dot.render(filename='matrix.gv',
                view=True,
+               cleanup=True,
                directory='/Users/ninroot/OneDrive - EPITA/ING2/URSI/FNAC DARTY/Urbanisation shared/Urbanisation shared all/')
 
 
