@@ -14,6 +14,7 @@ styles = {
     }
 }
 
+
 class Temporality:
     SYNC = "synchrone"
     ASYNC = "asynchrone"
@@ -36,33 +37,52 @@ def main():
     dot = Digraph(comment='https://github.com/Ninroot/excel-to-plot', name=title, format='pdf')
     dot.graph_attr['fontsize'] = '20'
     dot.graph_attr['fontname'] = 'calibri'
+    dot.node_attr['fontsize'] = '14'
+    dot.node_attr['fontname'] = 'calibri'
+    dot.edge_attr['fontsize'] = '14'
+    dot.edge_attr['fontname'] = 'calibri'
     dot.body.append('\tlabelloc="t";\n\tlabel="' + title + '";')
     # dot.engine = 'circo'
     # dot.engine = 'sfdp'
 
-    dot.edge_attr['fontsize'] = '14'
-    dot.edge_attr['fontname'] = 'calibri'  # (fontsize='14')
+    apps = ['Backoffice',
+            'Caisse',
+            'Fidélité',
+            'Référentiel',
+            'Monétique',
+            'eCommerce',
+            'Entrepôt',
+            'BI',
+            'Réappro',
+            'Banque',
+            'Fournisseur'
+            ]
+
+    for app in apps:
+        dot.node(app, app, color=get_code_color_by_app(app), style='filled')
+
     for r in range(2, 50):
         row = matrix['A' + str(r) + ':' + 'N' + str(r)]
         flux = Flux(row)
         if not flux.is_valid():
             continue
-        print(flux)
+        # print(flux)
         # dot.attr('node', shape='rarrow')
         # dot.edge_attr.update(arrowhead='vee', arrowsize='2')
         dot.edge(flux.src, flux.dst, flux.get_label(),
-                 color=flux.get_code_color_by_app(),
+                 color=get_code_color_by_app(flux.src),
                  style=flux.get_style(),
-                 arrowhead=flux.get_arrow_head()
+                 arrowhead=flux.get_arrow_head(),
+                 penwidth='2',
+                 labelfontcolor='red'
                  )
 
-
-    # print(dot.source)
+    print(dot.source)
     dot.render(filename='matrix.gv',
                view=True,
                cleanup=True,
-               # )
-    directory='/Users/ninroot/OneDrive - EPITA/ING2/URSI/FNAC DARTY/Urbanisation shared/Urbanisation shared all/')
+               )
+    # directory='/Users/ninroot/OneDrive - EPITA/ING2/URSI/FNAC DARTY/Urbanisation shared/Urbanisation shared all/')
 
 
 class Flux:
@@ -108,29 +128,6 @@ class Flux:
             return "crow"
         return "vee"
 
-    # http://www.color-hex.com/color-palette/200
-    def get_code_color_by_app(self):
-        if self.src == "Caisse":
-            return "#885159"
-        elif self.src == "Backoffice":
-            return "#645188"
-        elif self.src == "eCommerce":
-            return "#886451"
-        elif self.src == "Réappro":
-            return "#528881"
-        elif self.src == "Fidélité":
-            return "#4d7358"
-        elif self.src == "BI":
-            return "#4d5d53"
-        elif self.src == "Monétique":
-            return "#00308f"
-        elif self.src == "Entrepôt":
-            return "#0900ff"
-        # elif self.src == "":
-        #     return ""
-        # elif self.src == "":
-        #     return ""
-
     def get_progression_code_color(self):
         if self.progression < 25:
             return '#d20000'
@@ -144,12 +141,41 @@ class Flux:
         return "src: " + self.src + " dst: " + self.dst + " title: " + self.title + " temp: " + self.temp
 
     def get_label(self):
-        return '[' + str(self.id) + ']' + self.title + '(' + str(self.progression) + '%)'
+        return '<<font color="{:s}"> [{:d}]{:s}({:.0f}%) </font>>'.format(get_code_color_by_app(self.src), self.id, self.title, self.progression)
 
     def is_valid(self):
         if self.src and self.dst:
             return True
         return False
+
+
+# http://www.color-hex.com/color-palette/200
+def get_code_color_by_app(app):
+    if app == "Backoffice":
+        return "#e57f00"
+    elif app == "Caisse":
+        return "#645188"
+    elif app == "eCommerce":
+        return "#886451"
+    elif app == "Réappro":
+        return "#528881"
+    elif app == "Fidélité":
+        return "#5fc300"
+    elif app == "BI":
+        return "#c900a2"
+    elif app == "Monétique":
+        return "#0497df"
+    elif app == "Entrepôt":
+        return "#b8c300"
+    elif app == "Référentiel":
+        return "#0900ff"
+    elif app == "Réappro":
+        return "#4e17ff"
+    elif app == "Banque":
+        return "#cc7480"
+    elif app == "Fournisseur":
+        return "#e12637"
+    return "#000000"
 
 
 if __name__ == "__main__":
