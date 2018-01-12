@@ -1,9 +1,9 @@
 import datetime
-from enum import auto
+import sys
 
 from openpyxl import load_workbook
-
 from graphviz import Digraph
+
 
 styles = {
     'async': {
@@ -25,16 +25,26 @@ class Initiator:
     PULL = "pull"
 
 
-def main():
+def main(argv):
+    if len(argv) == 0:
+        generate()
+    elif len(argv) == 1:
+        generate(file_src=argv[0])
+    else:
+        generate(file_src=argv[0], dir_dest=argv[1])
+
+
+def generate(file_src="Matrix.xlsx", dir_dest="."):
     workSheet = load_workbook(
-        '/Users/ninroot/OneDrive - EPITA/ING2/URSI/FNAC DARTY/Urbanisation shared/Urbanisation shared all/Matrice des flux.xlsx'
-        , data_only=True)
+        filename=file_src,
+        data_only=True)
     # print(workSheet.get_sheet_names())
     matrix = workSheet["Matrice des flux"]
 
     update = datetime.datetime.now()
     title = 'Matrice des flux (màj : ' + update.strftime('%Y/%m/%d %H:%M:%S') + ')'
     dot = Digraph(comment='https://github.com/Ninroot/excel-to-plot', name=title, format='pdf')
+    dot.body.append(get_legend())
     dot.graph_attr['fontsize'] = '20'
     dot.graph_attr['fontname'] = 'calibri'
     dot.node_attr['fontsize'] = '14'
@@ -81,8 +91,9 @@ def main():
     dot.render(filename='matrix.gv',
                view=True,
                cleanup=True,
-               )
-    # directory='/Users/ninroot/OneDrive - EPITA/ING2/URSI/FNAC DARTY/Urbanisation shared/Urbanisation shared all/')
+               directory=dir_dest)
+
+    print("render in " + dir_dest + " directory")
 
 
 class Flux:
@@ -141,12 +152,18 @@ class Flux:
         return "src: " + self.src + " dst: " + self.dst + " title: " + self.title + " temp: " + self.temp
 
     def get_label(self):
-        return '<<font color="{:s}"> [{:d}]{:s}({:.0f}%) </font>>'.format(get_code_color_by_app(self.src), self.id, self.title, self.progression)
+        return '<<font color="{:s}"> [{:d}]{:s}({:.0f}%) </font>>'.format(get_code_color_by_app(self.src), self.id,
+                                                                          self.title, self.progression)
 
     def is_valid(self):
         if self.src and self.dst:
             return True
         return False
+
+
+def get_legend():
+    legend = ""
+    return legend
 
 
 # http://www.color-hex.com/color-palette/200
@@ -179,4 +196,4 @@ def get_code_color_by_app(app):
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
