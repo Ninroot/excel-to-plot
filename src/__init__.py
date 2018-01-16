@@ -65,13 +65,15 @@ def generate(file_src="Matrix.xlsx", dir_dest="."):
             'BI',
             'Réappro',
             'Banque',
-            'Fournisseur'
+            'Fournisseur',
+            'Client'
             ]
 
     for app in apps:
         dot.node(app, app, color=get_code_color_by_app(app), style='filled')
 
-    for r in range(2, 50):
+    # bound of the table, increase the max value if necessary
+    for r in range(2, 70):
         row = matrix['A' + str(r) + ':' + 'N' + str(r)]
         flux = Flux(row)
         if not flux.is_valid():
@@ -162,7 +164,31 @@ class Flux:
 
 
 def get_legend():
-    legend = ""
+    legend = """
+    rankdir=LR
+    node [shape=plaintext]
+    subgraph cluster_01 { 
+      label = "Légende";
+      key [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
+        <tr><td align="right" port="i0">Format</td></tr>
+        <tr><td align="right" port="i1">Flux synchrone</td></tr>
+        <tr><td align="right" port="i2">Flux asynchrone</td></tr>
+        <tr><td align="right" port="i3">Push</td></tr>
+        <tr><td align="right" port="i4">Pull</td></tr>
+        </table>>]
+      key2 [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
+        <tr><td align="right" port="i0">&nbsp;</td></tr>
+        <tr><td port="i1">&nbsp;</td></tr>
+        <tr><td port="i2">&nbsp;</td></tr>
+        <tr><td port="i3">&nbsp;</td></tr>
+        <tr><td port="i4">&nbsp;</td></tr>
+        </table>>]
+      key:i0:e -> key2:i0:w [color=white, label="[id du flux] titre du flux (pourcentage d'avancement)"]
+      key:i1:e -> key2:i1:w [arrowhead=vee, style=filled, penwidth=2]
+      key:i2:e -> key2:i2:w [arrowhead=vee, style=dashed, penwidth=2]
+      key:i3:e -> key2:i3:w [arrowhead=vee, penwidth=2]
+      key:i4:e -> key2:i4:w [arrowhead=crow, penwidth=2]
+    }"""
     return legend
 
 
@@ -189,8 +215,10 @@ def get_code_color_by_app(app):
     elif app == "Réappro":
         return "#4e17ff"
     elif app == "Banque":
-        return "#cc7480"
+        return "#e12637"
     elif app == "Fournisseur":
+        return "#e12637"
+    elif app == "Client":
         return "#e12637"
     return "#000000"
 
