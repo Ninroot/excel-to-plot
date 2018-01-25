@@ -133,8 +133,8 @@ class Flux:
 
     def get_style(self):
         if self.temp == Temporality.ASYNC:
-            return 'filled'
-        return 'dashed'
+            return 'dashed'
+        return 'filled'
 
     def get_arrow_head(self):
         if self.init == Initiator.PULL:
