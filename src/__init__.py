@@ -103,6 +103,7 @@ class Flux:
     src = ""
     dst = ""
     title = ""
+    route = ""
     progression = 0
     init = Initiator.PUSH
     temp = Temporality.SYNC
@@ -112,6 +113,8 @@ class Flux:
             return None
         if row[0][0].value is not None:
             self.src = row[0][0].value
+        if row[0][10].value is not None:
+            self.route = row[0][10].value
         if row[0][1].value is not None:
             self.dst = row[0][1].value
         if row[0][2].value is not None:
@@ -154,8 +157,8 @@ class Flux:
         return "src: " + self.src + " dst: " + self.dst + " title: " + self.title + " temp: " + self.temp
 
     def get_label(self):
-        return '<<font color="{:s}"> [{:d}]{:s}({:.0f}%) </font>>'.format(get_code_color_by_app(self.src), self.id,
-                                                                          self.title, self.progression)
+        return '<<font color="{:s}"> [{:d}]{:s}({:.0f}%)<br/>{:s}</font>>'.format(get_code_color_by_app(self.src), self.id,
+                                                                          self.title, self.progression, self.route)
 
     def is_valid(self):
         if self.src and self.dst:
