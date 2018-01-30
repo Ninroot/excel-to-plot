@@ -86,7 +86,8 @@ def generate(file_src="Matrix.xlsx", dir_dest="."):
                  style=flux.get_style(),
                  arrowhead=flux.get_arrow_head(),
                  penwidth='2',
-                 labelfontcolor='red'
+                 labelfontcolor='red',
+                 href=flux.mock
                  )
 
     print(dot.source)
@@ -104,6 +105,7 @@ class Flux:
     dst = ""
     title = ""
     route = ""
+    mock = ""
     progression = 0
     init = Initiator.PUSH
     temp = Temporality.SYNC
@@ -113,8 +115,6 @@ class Flux:
             return None
         if row[0][0].value is not None:
             self.src = row[0][0].value
-        if row[0][10].value is not None:
-            self.route = row[0][10].value
         if row[0][1].value is not None:
             self.dst = row[0][1].value
         if row[0][2].value is not None:
@@ -129,10 +129,14 @@ class Flux:
                 self.temp = Temporality.ASYNC
         if row[0][6].value is not None:
             self.title = row[0][6].value
+        if row[0][10].value is not None:
+            self.route = row[0][10].value
         if row[0][11].value is not None:
             self.progression = row[0][11].value * 100
         if row[0][12].value is not None:
             self.id = row[0][12].value
+        if row[0][13].value is not None:
+            self.mock = row[0][13].value
 
     def get_style(self):
         if self.temp == Temporality.ASYNC:
